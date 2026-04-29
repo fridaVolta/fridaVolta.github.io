@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Candidate - Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #fff;
+            --cascata-color: #3498db;
+            --spirale-color: #9b59b6;
+            --agile-color: #2ecc71;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { margin-top: 0; }
+
+        /* Tools Section (Dado e Imprevisti) */
+        .tools-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dado-result {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .imprevisto-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin: 15px 0;
+            min-height: 50px;
+            color: var(--danger);
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #2c3e50;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover { background: #1a252f; }
+
+        /* Teams Section */
+        .teams-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            flex-wrap: wrap;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 300px;
+            overflow: hidden;
+        }
+
+        .team-header {
+            padding: 15px;
+            color: white;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .header-cascata { background: var(--cascata-color); }
+        .header-spirale { background: var(--spirale-color); }
+        .header-agile { background: var(--agile-color); }
+
+        .team-stats {
+            padding: 20px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .stat-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-small {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            font-size: 1.2rem;
+            line-height: 1;
+            border-radius: 50%;
+        }
+
+        .btn-minus { background: var(--danger); }
+        .btn-minus:hover { background: #c0392b; }
+        
+        .btn-plus { background: #27ae60; }
+        .btn-plus:hover { background: #1e8449; }
+
+        .stat-value {
+            font-weight: bold;
+            width: 40px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Release Candidate: Dashboard</h1>
+
+    <div class="tools-section">
+        <div class="tool-card">
+            <h3>🎲 Lancio del Dado</h3>
+            <div class="dado-result" id="dadoDisplay">-</div>
+            <button onclick="lanciaDado()">Tira il Dado (D6)</button>
+        </div>
+
+        <div class="tool-card">
+            <h3>⚡ Pesca un Imprevisto</h3>
+            <div class="imprevisto-text" id="imprevistoDisplay">Nessun imprevisto... per ora.</div>
+            <button onclick="pescaImprevisto()">Pesca Carta</button>
+        </div>
+    </div>
+
+    <div class="teams-container">
+        <div class="team-card">
+            <div class="team-header header-cascata">Modello a Cascata</div>
+            <div class="team-stats">
+                <div class="stat-row">
+                    <span>💰 Monete:</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('cascata', 'monete', -5)">-</button>
+                        <span class="stat-value" id="cascata-monete">120</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('cascata', 'monete', 5)">+</button>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <span>⏳ Turni:</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('cascata', 'turni', -1)">-</button>
+                        <span class="stat-value" id="cascata-turni">20</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('cascata', 'turni', 1)">+</button>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <span>🛡️ Qualità (QS):</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('cascata', 'qualita', -5)">-</button>
+                        <span class="stat-value" id="cascata-qualita">100</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('cascata', 'qualita', 5)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-card">
+            <div class="team-header header-spirale">Modello a Spirale</div>
+            <div class="team-stats">
+                <div class="stat-row">
+                    <span>💰 Monete:</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('spirale', 'monete', -5)">-</button>
+                        <span class="stat-value" id="spirale-monete">100</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('spirale', 'monete', 5)">+</button>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <span>⏳ Turni:</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('spirale', 'turni', -1)">-</button>
+                        <span class="stat-value" id="spirale-turni">20</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('spirale', 'turni', 1)">+</button>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <span>🛡️ Qualità (QS):</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('spirale', 'qualita', -5)">-</button>
+                        <span class="stat-value" id="spirale-qualita">100</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('spirale', 'qualita', 5)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-card">
+            <div class="team-header header-agile">Modello Agile</div>
+            <div class="team-stats">
+                <div class="stat-row">
+                    <span>💰 Monete:</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('agile', 'monete', -5)">-</button>
+                        <span class="stat-value" id="agile-monete">100</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('agile', 'monete', 5)">+</button>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <span>⏳ Turni:</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('agile', 'turni', -1)">-</button>
+                        <span class="stat-value" id="agile-turni">16</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('agile', 'turni', 1)">+</button>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <span>🛡️ Qualità (QS):</span>
+                    <div class="stat-controls">
+                        <button class="btn-small btn-minus" onclick="aggiornaStat('agile', 'qualita', -5)">-</button>
+                        <span class="stat-value" id="agile-qualita">100</span>
+                        <button class="btn-small btn-plus" onclick="aggiornaStat('agile', 'qualita', 5)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestione Dado
+        function lanciaDado() {
+            const result = Math.floor(Math.random() * 6) + 1;
+            const display = document.getElementById('dadoDisplay');
+            display.innerText = "🎲 " + result;
+            
+            // Aggiunge un piccolo effetto visivo
+            display.style.transform = "scale(1.2)";
+            setTimeout(() => display.style.transform = "scale(1)", 150);
+        }
+
+        // Gestione Imprevisti
+        const mazzoImprevisti = [
+            "Il Cliente cambia idea! Rivedere i requisiti. Costo: -10 Monete, -2 Turni. (Il Team Agile è immune al costo in Turni).",
+            "Il Lead Developer si è licenziato! Panico. Costo: -3 Turni per onboarding del nuovo arrivato.",
+            "Libreria Open Source Deprecata! Scatta un refactoring imprevisto. Costo: -15 Monete.",
+            "Vulnerabilità Zero-Day! Rischio sicurezza critico. Costo: -10 QS se non spendete 10 Monete ORA.",
+            "Hard disk bruciato senza Backup! Vergogna! Costo: -2 Turni, -10 Monete.",
+            "Incomprensione dei Requisiti: Un'intera feature va riscritta. Costo: -15 Monete (Il Team a Cascata paga doppio: -30 Monete).",
+            "Falso allarme: Il bug era solo nella cache del browser del cliente. Nessuna penalità, tirate un sospiro di sollievo!",
+            "Debito Tecnico accumulato: Il codice è incomprensibile. Il prossimo tiro di dado per l'implementazione ha un malus di -1."
+        ];
+
+        function pescaImprevisto() {
+            const index = Math.floor(Math.random() * mazzoImprevisti.length);
+            document.getElementById('imprevistoDisplay').innerText = mazzoImprevisti[index];
+        }
+
+        // Gestione Statistiche
+        let stats = {
+            cascata: { monete: 120, turni: 20, qualita: 100 },
+            spirale: { monete: 100, turni: 20, qualita: 100 },
+            agile: { monete: 100, turni: 16, qualita: 100 }
+        };
+
+        function aggiornaStat(team, tipo, quantita) {
+            stats[team][tipo] += quantita;
+            
+            // Impediamo che scendano sotto lo zero per evitare bug visivi, eccetto le monete (si può andare in debito/bancarotta!)
+            if (tipo === 'turni' && stats[team][tipo] < 0) stats[team][tipo] = 0;
+            
+            const elementId = `${team}-${tipo}`;
+            const display = document.getElementById(elementId);
+            display.innerText = stats[team][tipo];
+
+            // Effetti visivi (rosso se scende, verde se sale)
+            display.style.color = quantita > 0 ? '#27ae60' : '#e74c3c';
+            setTimeout(() => display.style.color = 'inherit', 500);
+
+            // Controllo sconfitta immediata Qualità
+            if (tipo === 'qualita' && stats[team][tipo] < 50) {
+                alert(`⚠️ ATTENZIONE! La Qualità del team ${team.toUpperCase()} è scesa sotto 50! Progetto a forte rischio fallimento.`);
+            }
+        }
+    </script>
+</body>
+</html>
